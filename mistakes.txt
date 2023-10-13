@@ -1,3 +1,12 @@
+:::::::::FIX IT ::::::::::
+-> MULTILINE_COMMENT NOT detectED properly
+-> RENDER ERROR IF PREPROCESSOR DERECTIVE IS INCORRECT(TEST CASE 9)
+
+
+
+
+::::::::MISTAKES::::::::
+
 ->  forgot rules for ++ and --
 ->  if 2 or more rules having some common part then
      rule corresponding to longest  matched string will we accepted

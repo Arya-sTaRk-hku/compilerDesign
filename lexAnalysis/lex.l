@@ -85,12 +85,13 @@ void validateMultilineComment(char com[],int yyleng){
         printf("\n\x1B[31merror! multiline comment starting at line %d not terminated with'*/'\x1B[0m\n",yylineno);
     // printf("\t %c \n",com[yyleng-1]);
 }
-
+ 
 // handle line count in multiline comment 
 void handleLineCount(char mltLineCom[],int* yylineno,int yyleng){
-    printf("\n< MULTILINE_COMMENT >\nat line:%d\n",*yylineno);
+    printf("\n< MULTILINE_COMMENT >\nthrough:[%d->",*yylineno);
     for(int i = 0;i < yyleng;i++)
         if(yytext[i] == '\n')   (*yylineno)++;
+    printf("%d]\n",*yylineno);
     
 }
 
@@ -128,7 +129,11 @@ MORE_CHAR_ERROR "'"...*"'"
 STRING "\"".*"\""
 STRING_ERROR "\""
 SINGEL_LINE_COMMENT "//".*
-MULTILINE_COMMENT "/*"(.|\n)*"*/"
+mstr "*/"
+MULTILINE_COMMENT "/*"[^{mstr}]*"*/"
+
+CONSTANT {INTEGER}|{FLOAT}|{STRING}|{CHAR}
+
 MULTILINE_COMMENT_ERROR "/*"
 
 /* line no */
@@ -138,7 +143,13 @@ NEW_LINE \n
 /* THERE IS NOTHING KNOWN AS " NESTED COMMENT " */
 
 
-%%      
+/* DETECT PREPROCESSOR DERECTIVE */
+PREPROCESSOR "#"[ ]*"include"[ ]*"<"{IDENTIFIER}".h>"|"#"[ ]*"include"[ ]*"\""{IDENTIFIER}".txt\""
+PREPROCESSOR_VALUE_DEFENITION "#"[ ]*"define"[ ]*{IDENTIFIER}[ ]*{CONSTANT}
+
+%%    
+{PREPROCESSOR}              ;
+{PREPROCESSOR_VALUE_DEFENITION} ;/* NEED TO UPDATE SYMBOL TABLE HERE */  
 [ ]                         countSpace++;
 {NEW_LINE}                  yylineno++;
 {KEYWORD}                   lookInSymbolTable(0,hashTable,yytext,"Keyword",yyleng,yylineno);
