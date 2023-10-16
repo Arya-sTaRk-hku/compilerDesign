@@ -1,0 +1,18 @@
+struct Ref 
+{
+   int lineNo;
+   struct Ref *next;
+};
+typedef struct Ref Ref;
+
+struct tokenNode
+{
+   char name[31];
+   char type[30];
+   int length;
+   int scope;
+   Ref *lineOfRef;
+   struct tokenNode *next;
+   
+};
+typedef struct tokenNode tokenNode;

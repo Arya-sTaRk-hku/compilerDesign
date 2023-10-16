@@ -99,53 +99,68 @@ int countSpace = 0;
 
 tokenNode *hashTable[14];
 
-
-
 %}
 
 %option noyywrap
 
 /* Rule's for Token's */
-/* PREPROCESSOR_DIRECTIVE "#"[ ]*"include"[ ]*"<".*">" */
+
+
+
+/* Rule for Keyword's */
+KEYWORD "auto"|"double"|"int"|"struct"|"break"|"else"|"long"|"switch"|"case"|"enum"|"register"|"typedef"|"char"|"extern"|"return"|"union"|"const"|"float"|"short"|"unsigned"|"continue"|"for"|"signed"|"void"|"default"|"goto"|"sizeof"|"volatile"|"do"|"if"|"static"|"while"
+
+/* Rule for Identifier's */
+IDENTIFIER [a-zA-Z_][a-zA-Z0-9]* 
+
+/* Rules for Operator's */
 COMPARISON_OPERATOR "=="|"<="|">="|">"|"<"
 SHIFT_OPERATOR ">>"|"<<"
 LOGICAL_OPERATOR "&&"|"||"|"!"
 ARITHMETIC_OPERATOR "+"|"-"|"*"|"/"|"%"
 BITWISE_OPERATOR "&"|"^"|"|"|"~"
 ASSIGNMENT_OPERATOR "="|"+="|"-="|"%="|"*="|"/="|"&="|"^="|"|="|"~="|">>="|"<<="
-DELIMITER [,;]
-SPECIAL_CHAR "@"|"#"|"`"|"$"|"{"|"}"|"["|"]"|"."|"("|")"|"\\"|"?"
 
-KEYWORD "auto"|"double"|"int"|"struct"|"break"|"else"|"long"|"switch"|"case"|"enum"|"register"|"typedef"|"char"|"extern"|"return"|"union"|"const"|"float"|"short"|"unsigned"|"continue"|"for"|"signed"|"void"|"default"|"goto"|"sizeof"|"volatile"|"do"|"if"|"static"|"while"
+OPERATOR {COMPARISON_OPERATOR}|{SHIFT_OPERATOR}|{LOGICAL_OPERATOR}|{ARITHMETIC_OPERATOR}|{BITWISE_OPERATOR}|{ASSIGNMENT_OPERATOR}
+
+/* Rules for Constant's */
 INTEGER [+-]?[0-9]+ 
 FLOAT [-+]?[0-9]+"."[0-9]+[f]?|[-+]?[0-9]+"."|[-+]?"."[0-9]+[f]?|[-+]?[0-9]+[e,E]"-"[0-9]+
-IDENTIFIER [a-zA-Z_][a-zA-Z0-9]* 
-
-/* char */
 CHAR "'"."'"|"'\\n'"|"'\\b'"|"'\\t'"|"'\\a'"|"'\\v'"|"'\\0'"|"'\\r'"|"'\\\"'"|"'\\\''"|"'\\f'"|"'\\'"
 CHAR_ERROR "'".
 MORE_CHAR_ERROR "'"...*"'"
 /* string <mistake1:included new line in between string but fixed> */
 STRING "\"".*"\""
 STRING_ERROR "\""
+
+
+/* Rule for Symbol's */
+SYMBOL "`"|"!"|"@"|"#"|"$"|"%"|"("|")"|"-"|"_"|"="|"+"|"["|"]"|"{"|"}"|"\\"|":"|"\""|"'"|"<"|"."|">"|"?"
+
+/* Rules for comments */
 SINGEL_LINE_COMMENT "//".*
-mstr "*/"
-MULTILINE_COMMENT "/*"[^{mstr}]*"*/"
-
-CONSTANT {INTEGER}|{FLOAT}|{STRING}|{CHAR}
-
+str "/*"
+/* character '*' is not allowed but string "/*' allowed in this defenition of multiline comment */
+MULTILINE_COMMENT "/*"([a-zA-Z0-9 \n]|{SYMBOL}|{BITWISE_OPERATOR}|{DELIMITER}|{str}|[/])*"*/"
 MULTILINE_COMMENT_ERROR "/*"
-
-/* line no */
-NEW_LINE \n
 
 /* nested comment: not able to implement*/
 /* THERE IS NOTHING KNOWN AS " NESTED COMMENT " */
 
 
+
+
+CONSTANT {INTEGER}|{FLOAT}|{STRING}|{CHAR}
+
+
 /* DETECT PREPROCESSOR DERECTIVE */
 PREPROCESSOR "#"[ ]*"include"[ ]*"<"{IDENTIFIER}".h>"|"#"[ ]*"include"[ ]*"\""{IDENTIFIER}".txt\""
 PREPROCESSOR_VALUE_DEFENITION "#"[ ]*"define"[ ]*{IDENTIFIER}[ ]*{CONSTANT}
+
+/* other rules */
+DELIMITER [,;]
+NEW_LINE \n
+
 
 %%    
 {PREPROCESSOR}              ;
@@ -163,7 +178,7 @@ PREPROCESSOR_VALUE_DEFENITION "#"[ ]*"define"[ ]*{IDENTIFIER}[ ]*{CONSTANT}
 
 {STRING}                    lookInSymbolTable(5,hashTable,yytext,"String Literal",yyleng,yylineno);
 {STRING_ERROR}              printf("\n\x1B[31merror! expected terminating \" character\nat line:%d\n\x1B[0m",yylineno); 
-{SPECIAL_CHAR}              lookInSymbolTable(6,hashTable,yytext,"Special Character",yyleng,yylineno);
+{SYMBOL}              lookInSymbolTable(6,hashTable,yytext,"Special Character",yyleng,yylineno);
 {DELIMITER}                 lookInSymbolTable(7,hashTable,yytext,"Seperator",yyleng,yylineno);
 {SINGEL_LINE_COMMENT}       printf("\n< SINGEL_LINE_COMMENT >\nat line:%d\n",yylineno);
 {MULTILINE_COMMENT}         handleLineCount(yytext,&yylineno,yyleng);

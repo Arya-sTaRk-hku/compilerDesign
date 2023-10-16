@@ -1,10 +1,8 @@
-#   in clude    <stdio.h>
-# include "a.txt"
-# define var 59
-int main()
-{
-    float number1 = 100.53;
-    float number2 = 100.53f;
-    float number3 = 10053e-2;
-    float number4 = 10053E-2;
-}
+/* aksdfjl */
+
+/* alkdsjf /* alskdjf
+lsdkf  */
+
+/* alskdjf
+/* sldj */
+sdlafkj*/
