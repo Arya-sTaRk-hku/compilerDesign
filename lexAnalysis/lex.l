@@ -152,10 +152,15 @@ MULTILINE_COMMENT_ERROR "/*"
 
 CONSTANT {INTEGER}|{FLOAT}|{STRING}|{CHAR}
 
+/* Rule for filenames */
+HEADER_FILE "stdio.h"|"string.h"|"stdlib.h"|"math.h"|"ctype.h"
+FILE_NAME [A-Za-z_][a-zA-Z0-9_]*"."[a-zA-Z]+
 
 /* DETECT PREPROCESSOR DERECTIVE */
-PREPROCESSOR "#"[ ]*"include"[ ]*"<"{IDENTIFIER}".h>"|"#"[ ]*"include"[ ]*"\""{IDENTIFIER}".txt\""
-PREPROCESSOR_VALUE_DEFENITION "#"[ ]*"define"[ ]*{IDENTIFIER}[ ]*{CONSTANT}
+PREPROCESSOR "#"[ ]*"include"[ ]*"<"{HEADER_FILE}">"|"#"[ ]*"include"[ ]*"\"{FILE_NAME}\""
+PREPROCESSOR_VALUE_DEFENITION "#"[ ]*"define"[ ]+{IDENTIFIER}[ ]+{CONSTANT}
+
+/* HANDLE ERROR IN PREPROCESSOR */
 
 /* other rules */
 DELIMITER [,;]

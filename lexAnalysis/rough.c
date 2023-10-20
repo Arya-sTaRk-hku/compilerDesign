@@ -1,5 +1,10 @@
-#  include  <stdio.h>
+ #include  <stdio.h>
 #    define      ap    50
 int main(){
-    printf ( "hi"   )  ;
+    long a;
+    short b;
+  
+
+    
+    printf ("%d","o",'\0'+1,9,90)  ;
 }

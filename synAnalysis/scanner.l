@@ -132,12 +132,15 @@ OPERATOR {COMPARISON_OPERATOR}|{SHIFT_OPERATOR}|{LOGICAL_OPERATOR}|{ARITHMETIC_O
 /* Rules for Constant's */
 INTEGER [+-]?[0-9]+ 
 FLOAT [-+]?[0-9]+"."[0-9]+[f]?|[-+]?[0-9]+"."|[-+]?"."[0-9]+[f]?|[-+]?[0-9]+[e,E]"-"[0-9]+
-CHAR "'"."'"|"'\\n'"|"'\\b'"|"'\\t'"|"'\\a'"|"'\\v'"|"'\\0'"|"'\\r'"|"'\\\"'"|"'\\\''"|"'\\f'"|"'\\'"
+CHAR_LITERAL "'"."'"|"'\\n'"|"'\\b'"|"'\\t'"|"'\\a'"|"'\\v'"|"'\\0'"|"'\\r'"|"'\\\"'"|"'\\\''"|"'\\f'"|"'\\'"
 CHAR_ERROR "'".
 MORE_CHAR_ERROR "'"...*"'"
 /* string <mistake1:included new line in between string but fixed> */
 STRING "\"".*"\""
 STRING_ERROR "\""
+
+/* Rule for CHAR_LITERAL
+
 
 
 /* Rule for Symbol's */
@@ -170,15 +173,33 @@ NEW_LINE \n
 
 
 
-%%    
-{STRING}        { return STRING;}
+%% 
+{CHAR_LITERAL}      {return CHAR_LITERAL;}
+{DATA_TYPE} {return DATA_TYPE;}
+"if"        {return IF;}
+"else"      {return ELSE;}
+"continue"          { return CONTINUE;}
+"break"             { return BREAK;}
+"return"            { return RETURN;}
 "printf"            { return PRINT;}
 "("         { return LP;}
 ")"         { return RP;}
 ";"         { return SEMICOLON;}
+"&&"        {return AND;}
+"||"        {return OR;}
+"!"         {return NOT;}
+","         {return COMMA;}
+{INTEGER}       { return INT;}
+{FLOAT}         { return FLOAT;}
+{ARITHMETIC_OPERATOR}   { return AR_OP;}  
+{COMPARISON_OPERATOR}   { return CO_OP;}
+{STRING}        { return STRING;}
+{IDENTIFIER}        { return ID;}
 [ ]       ;
-(.|\n)      { return yytext[0];}
+.     { return yytext[0];}
 %%
+
+
 
 
 
