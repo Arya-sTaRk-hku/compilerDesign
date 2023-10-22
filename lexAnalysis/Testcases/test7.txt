@@ -1,6 +1,7 @@
 #include<stdio.h>
 int main()
 {
+    int a = 012;
     float number1 = 100.53;
     float number2 = 100.53f;
     float number3 = 10053e-2;

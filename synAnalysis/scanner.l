@@ -114,10 +114,12 @@ KEYWORD "auto"|"double"|"int"|"struct"|"break"|"else"|"long"|"switch"|"case"|"en
 /* Rule for Identifier's */
 IDENTIFIER [a-zA-Z_][a-zA-Z0-9]* 
 
-/* Rule for fundamental data types */
-INT_TYPE "int"|"short"|"long"|"long long"
+/* Rule for  data types */
+INT_TYPE "short"|"short int"|"int"|"long"|"long int"|"long long"|"long long int"
+
 DATA_TYPE {INT_TYPE}|"float"|"double"|"long double"|"char"
 
+PTR_TYPE {DATA_TYPE}[*]+ 
 
 /* Rules for Operator's */
 COMPARISON_OPERATOR "=="|"<="|">="|">"|"<"
@@ -130,7 +132,7 @@ ASSIGNMENT_OPERATOR "="|"+="|"-="|"%="|"*="|"/="|"&="|"^="|"|="|"~="|">>="|"<<="
 OPERATOR {COMPARISON_OPERATOR}|{SHIFT_OPERATOR}|{LOGICAL_OPERATOR}|{ARITHMETIC_OPERATOR}|{BITWISE_OPERATOR}|{ASSIGNMENT_OPERATOR}
 
 /* Rules for Constant's */
-INTEGER [+-]?[0-9]+ 
+INTEGER [+-]?[0]|[+-]?[1-9][0-9]* 
 FLOAT [-+]?[0-9]+"."[0-9]+[f]?|[-+]?[0-9]+"."|[-+]?"."[0-9]+[f]?|[-+]?[0-9]+[e,E]"-"[0-9]+
 CHAR_LITERAL "'"."'"|"'\\n'"|"'\\b'"|"'\\t'"|"'\\a'"|"'\\v'"|"'\\0'"|"'\\r'"|"'\\\"'"|"'\\\''"|"'\\f'"|"'\\'"
 CHAR_ERROR "'".
@@ -166,6 +168,10 @@ CONSTANT {INTEGER}|{FLOAT}|{STRING}|{CHAR}
 PREPROCESSOR "#"[ ]*"include"[ ]*"<"{IDENTIFIER}".h>"|"#"[ ]*"include"[ ]*"\""{IDENTIFIER}".txt\""
 PREPROCESSOR_VALUE_DEFENITION "#"[ ]*"define"[ ]*{IDENTIFIER}[ ]*{CONSTANT}
 
+/* Rule for filenames */
+HEADER_FILE "stdio.h"|"string.h"|"stdlib.h"|"math.h"|"ctype.h"
+FILE_NAME [A-Za-z_][a-zA-Z0-9_]*"."[a-zA-Z]+
+
 /* other rules */
 DELIMITER [,;]
 NEW_LINE \n
@@ -174,8 +180,16 @@ NEW_LINE \n
 
 
 %% 
+{HEADER_FILE}       {return HEADER_FILE;}
 {CHAR_LITERAL}      {return CHAR_LITERAL;}
 {DATA_TYPE} {return DATA_TYPE;}
+{PTR_TYPE}  {return PTR_TYPE;}
+"#"          {return HASH;}
+"include"       {return INCLUDE;}
+"define"        {return DEFINE;}
+"main"          {return MAIN;}
+"<"             {return LOP;}
+">"             {return GOP;}
 "if"        {return IF;}
 "else"      {return ELSE;}
 "continue"          { return CONTINUE;}
@@ -184,6 +198,11 @@ NEW_LINE \n
 "printf"            { return PRINT;}
 "("         { return LP;}
 ")"         { return RP;}
+"["         { return LSB;}
+"]"         { return RSB;}
+"{"            { return LCB;}
+
+"}"         { return RCB;}
 ";"         { return SEMICOLON;}
 "&&"        {return AND;}
 "||"        {return OR;}
@@ -196,7 +215,9 @@ NEW_LINE \n
 {STRING}        { return STRING;}
 {IDENTIFIER}        { return ID;}
 [ ]       ;
+\n      ;
 .     { return yytext[0];}
+
 %%
 
 
