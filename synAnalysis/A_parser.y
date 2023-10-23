@@ -2,6 +2,7 @@
     #include<stdio.h>
     #include<stdlib.h>
     #include<string.h>
+    void yyerror(char*);
 %}
 
 
@@ -19,7 +20,7 @@
 %token  STRING SEMICOLON DATA_TYPE PTR_TYPE
 
 // SYMBOL'S
-%token LP RP LCB RCB LSB RSB COMMA
+%token LP RP LCB RCB LSB RSB COMMA DOUBLE_QUOTE
 // OPERATOR
 %token  LO_OP CO_OP AR_OP AND OR NOT LOP GOP
 
@@ -32,7 +33,7 @@
 %token BREAK CONTINUE RETURN
 
 // OTHER TOKEN
-%token HASH INCLUDE DEFINE HEADER_FILE MAIN
+%token HASH INCLUDE DEFINE HEADER_FILE MAIN FILE_NAME
 %%
 start :a  { printf("valid syntax\n");return 0;}
       ;
@@ -45,6 +46,7 @@ preprocessor :header preprocessor
              ;
 
 header :HASH INCLUDE LOP HEADER_FILE GOP {printf("\tvalid preproccessor directive\n");}
+       |HASH INCLUDE  FILE_NAME {printf("\tvalid preproccessor directive\n");}
        ;     /* grammer for external file */
       
 macro :HASH DEFINE ID constant {printf("\tvalid macro\n");}
@@ -55,30 +57,34 @@ constant :INT
          |STRING
          |ID
          ;
-// ws :' ' ws
-//    |
-//    ;
-mainFunction :DATA_TYPE MAIN LP RP LCB codeblock RCB {printf("\tvalid main function syntax\n");}
-             ;
 
-codeblock :component codeblock
+mainFunction :DATA_TYPE MAIN LP RP code {printf("\tvalid main function syntax\n");}
+             ;
+code :blockCode
+     |stmt
+     ;
+blockCode :LCB localCode RCB
+            ;
+
+localCode :component localCode
           |
           ;
 
-component :stmt 
-          |ifelse {printf("\tvalid ifelse\n");}
-          |exp
+component :stmt {printf("\tvalid statement\n");}
+          |ifelse
+          |exp  
           ;
-stmt :dec SEMICOLON {printf("\tvalid declaration \n");}
-     |def SEMICOLON {printf("\tvalid definition\n");}
-     |funCall SEMICOLON {printf("\tvalid function call \n");}
-     |dec_def SEMICOLON {printf("\tvalid initialization at definition time\n");}
-     |BREAK SEMICOLON {printf("\tvalid break Statement\n");}
-     |CONTINUE SEMICOLON {printf("\tvalid continue Statement\n");}
-     |RETURN main_return_value SEMICOLON {printf("\tvalid return Statement\n");}
 
+stmt :dec SEMICOLON 
+     |def SEMICOLON 
+     |funCall SEMICOLON 
+     |dec_def SEMICOLON 
+     |BREAK SEMICOLON 
+     |CONTINUE SEMICOLON 
+     |RETURN main_return_value SEMICOLON 
+     |SEMICOLON 
      ;
-main_return_value :INT
+main_return_value :constant
                   |
                   ;
 dec :DATA_TYPE ID 
@@ -102,26 +108,25 @@ arg :COMMA ID arg
     |
     ;
 
-ifelse :IF LP exp RP stmt 
-       ;
-exp :co_exp {printf("\tvalid comparison expression\n");}
-    |ar_exp {printf("\tvalid arithmetic expression\nresult:%d\n",$$);}
-    |lo_exp {printf("\tvalid logical expression\n");}
-    |funCall
-    |ID
-    |INT 
-    |FLOAT 
-    |CHAR_LITERAL
-    |STRING
-    ;
-co_exp :ar_exp CO_OP ar_exp
-       ;
+ifelse :IF LP exp RP code {printf("\tvalid standAlone if statement\n");}
+       |IF LP exp RP code ELSE code {printf("\tvalid standAlone if-else statement\n");}
+       |IF LP exp RP code ELSE IF LP exp RP code ELSE code {printf("\tvalid standAlone if-else if-else statement\n");}
 
-ar_exp :x AR_OP x
        ;
-x :INT
-  |FLOAT
-  ;
+exp :co_exp 
+    |lo_exp 
+    |funCall
+    |constant
+    ;
+co_exp :constant comparison_operator constant
+       ;
+comparison_operator :CO_OP
+                    |LOP
+                    |GOP
+                    ;
+
+
+
 lo_exp :exp AND exp
        |exp OR exp
        |NOT exp
@@ -135,11 +140,8 @@ int main(){
     // printf("Enter Statement:");
 
       yyparse();
-    
-    
-
 }
 
-int yyerror(char *err){
-    fprintf(stderr,"%s\n","invalid syntax");
+void yyerror(char *err){
+    fprintf(stderr,"%s\n",err);
 }

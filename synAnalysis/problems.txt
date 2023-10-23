@@ -1,4 +1,6 @@
 :::::::::FIX IT ::::::::::
+-> 
+->   i dont understand dangling eles dilema
 -> MULTILINE_COMMENT NOT detectED properly
      -> updated upto some extent
 -> RENDER ERROR IF PREPROCESSOR DERECTIVE IS INCORRECT(TEST CASE 9)
@@ -9,6 +11,7 @@
 
 ::::::::MISTAKES::::::::
 -> white space is ignored thats why unble to define macro( working fine after some time i dont know how??)
+     -> problem: we have defined wrong regexp for INT
 -> choose EPSILON RULE wisely if not may raise conflicts
 -> saving yacc file with extension .l
 ->  forgot rules for ++ and --

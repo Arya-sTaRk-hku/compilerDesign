@@ -122,7 +122,7 @@ DATA_TYPE {INT_TYPE}|"float"|"double"|"long double"|"char"
 PTR_TYPE {DATA_TYPE}[*]+ 
 
 /* Rules for Operator's */
-COMPARISON_OPERATOR "=="|"<="|">="|">"|"<"
+COMPARISON_OPERATOR "!="|"=="|"<="|">="
 SHIFT_OPERATOR ">>"|"<<"
 LOGICAL_OPERATOR "&&"|"||"|"!"
 ARITHMETIC_OPERATOR "+"|"-"|"*"|"/"|"%"
@@ -170,7 +170,7 @@ PREPROCESSOR_VALUE_DEFENITION "#"[ ]*"define"[ ]*{IDENTIFIER}[ ]*{CONSTANT}
 
 /* Rule for filenames */
 HEADER_FILE "stdio.h"|"string.h"|"stdlib.h"|"math.h"|"ctype.h"
-FILE_NAME [A-Za-z_][a-zA-Z0-9_]*"."[a-zA-Z]+
+FILE_NAME "\""[A-Za-z_][a-zA-Z0-9_]*"."[a-zA-Z]+"\""
 
 /* other rules */
 DELIMITER [,;]
@@ -181,9 +181,11 @@ NEW_LINE \n
 
 %% 
 {HEADER_FILE}       {return HEADER_FILE;}
+{FILE_NAME}         {return FILE_NAME;}
 {CHAR_LITERAL}      {return CHAR_LITERAL;}
 {DATA_TYPE} {return DATA_TYPE;}
 {PTR_TYPE}  {return PTR_TYPE;}
+"\""        {return DOUBLE_QUOTE;}
 "#"          {return HASH;}
 "include"       {return INCLUDE;}
 "define"        {return DEFINE;}
@@ -211,7 +213,7 @@ NEW_LINE \n
 {INTEGER}       { return INT;}
 {FLOAT}         { return FLOAT;}
 {ARITHMETIC_OPERATOR}   { return AR_OP;}  
-{COMPARISON_OPERATOR}   { return CO_OP;}
+{COMPARISON_OPERATOR}   { printf("CO_OP\n");return CO_OP;}
 {STRING}        { return STRING;}
 {IDENTIFIER}        { return ID;}
 [ ]       ;
